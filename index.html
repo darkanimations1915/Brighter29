@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Professional Minecraft Store</title>
+    <!-- Include the Tebex Javascript Library -->
+    <script src="https://tebex.io"></script>
+    <style>
+        /* Put whatever crazy professional CSS styling you want here */
+        body { background: #121212; color: #fff; font-family: sans-serif; text-align: center; }
+        .store-container { display: flex; gap: 20px; justify-content: center; margin-top: 50px; }
+        .package-card { background: #1a1a1a; border: 2px solid #333; padding: 20px; border-radius: 8px; width: 200px; }
+        .buy-btn { background: #ffaa00; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <h1>SERVER STORE</h1>
+    <p>Fully custom raw HTML storefront!</p>
+
+    <!-- This is where your packages will automatically appear -->
+    <div id="packages-display" class="store-container">Loading packages...</div>
+
+    <script>
+        // Paste your Public Webstore Token from Step 1 between the quotes below
+        const PUBLIC_TOKEN = "13iz5-8573bd949234dd62a7235ef1c0d519ea086";
+
+        // Initialize Tebex
+        Tebex.init({ publicToken: PUBLIC_TOKEN });
+
+        // Fetch your store packages automatically
+        Tebex.packages.list().then((response) => {
+            const container = document.getElementById('packages-display');
+            container.innerHTML = ''; // Clear the loading text
+
+            // Loop through each package in your Tebex dashboard
+            response.data.forEach(pkg => {
+                container.innerHTML += `
+                    <div class="package-card">
+                        <h3>${pkg.name}</h3>
+                        <p>${pkg.description || 'No description'}</p>
+                        <p><strong>$${pkg.price}</strong></p>
+                        <button class="buy-btn" onclick="openCheckout(${pkg.id})">Buy Now</button>
+                    </div>
+                `;
+            });
+        }).catch(err => {
+            document.getElementById('packages-display').innerHTML = "Error loading packages. Check your token!";
+            console.error(err);
+        });
+
+        // Function to launch the secure payment popup when someone clicks buy
+        function openCheckout(packageId) {
+            Tebex.checkout.launch({
+                packageId: packageId
+            });
+        }
+    </script>
+</body>
+</html>
